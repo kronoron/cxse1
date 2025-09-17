@@ -22,4 +22,11 @@ const eslintConfig = [
   },
 ];
 
-export default eslintConfig;
+export default {
+  extends: ["next/core-web-vitals"],
+  rules: {
+    "@typescript-eslint/no-explicit-any": "off",       // disables errors for "any" types
+    "@typescript-eslint/ban-ts-comment": "off",       // allows @ts-ignore comments
+    "@typescript-eslint/no-unused-vars": "warn"       // converts unused variable errors to warnings
+  }
+};

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
+import Providers from "@/app/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,10 +26,47 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}>
+        <div className="flex min-h-screen">
+          <aside className="w-64 bg-zinc-950 p-4 hidden md:flex flex-col gap-3 border-r border-zinc-800">
+            <Link href="/" className="text-xl font-bold">CxSE</Link>
+            <nav className="flex flex-col gap-2 text-sm">
+              <Link href="/onboarding" className="hover:text-green-400">Training</Link>
+              <Link href="/onboarding" className="hover:text-green-400">Onboarding</Link>
+              <Link href="/reporting" className="hover:text-green-400">Reporting</Link>
+              <Link href="/pipeline" className="hover:text-green-400">Pipeline</Link>
+              <Link href="/analytics" className="hover:text-green-400">Data & Analytics</Link>
+            </nav>
+          </aside>
+          <main className="flex-1">
+            <div className="sticky top-0 z-10 border-b border-zinc-800 bg-black/60 backdrop-blur">
+              <div className="mx-auto max-w-6xl p-4 flex items-center justify-between">
+                <div className="flex-1 flex justify-center gap-6 text-sm">
+                  <Link href="/?role=AE">AE</Link>
+                  <Link href="/?role=SDR">SDR</Link>
+                  <Link href="/?role=BDR">BDR</Link>
+                  <Link href="/?role=CSM">CSM</Link>
+                  <Link href="/?role=AM">AM</Link>
+                  <Link href="/?role=SUPPORT">Support</Link>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Link href="/settings">Theme & Profile</Link>
+                </div>
+              </div>
+            </div>
+            <div className="mx-auto max-w-6xl p-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+              <div>
+                <Providers>{children}</Providers>
+              </div>
+              <aside className="hidden lg:block border-l border-zinc-800 pl-6">
+                <div className="sticky top-16">
+                  <h3 className="font-semibold mb-2">Insights</h3>
+                  <p className="text-sm text-zinc-400">Notes, tips, activity feed will appear here during sessions.</p>
+                </div>
+              </aside>
+            </div>
+          </main>
+        </div>
       </body>
     </html>
   );

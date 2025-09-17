@@ -1,0 +1,148 @@
+// Prisma schema for CxSE MVP
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  AE
+  SDR
+  BDR
+  CSM
+  AM
+  SUPPORT
+}
+
+enum PipelineStatus {
+  ACTIVE
+  CLOSED_WON
+  CLOSED_LOST
+  INACTIVE
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  scenarios     Scenario[]
+  conversations Conversation[]
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  passwordHash  String?
+  image         String?
+  role          Role?
+  isOwner       Boolean  @default(false)
+  companyId     String?
+  company       Company? @relation(fields: [companyId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts   Account[]
+  sessions   Session[]
+  recordings Recording[]
+  createdScenarios Scenario[] @relation("UserCreatedScenarios")
+  conversations    Conversation[]
+}
+
+model Scenario {
+  id          String   @id @default(cuid())
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  title       String
+  description String
+  role        Role
+  industry    String?
+  createdById String?
+  createdBy   User?    @relation(name: "UserCreatedScenarios", fields: [createdById], references: [id])
+  isCustom    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  conversations Conversation[]
+  recordings    Recording[]
+}
+
+model Conversation {
+  id           String         @id @default(cuid())
+  companyId    String?
+  company      Company?       @relation(fields: [companyId], references: [id])
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  scenarioId   String?
+  scenario     Scenario?      @relation(fields: [scenarioId], references: [id])
+  status       PipelineStatus @default(ACTIVE)
+  title        String
+  lastActiveAt DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  recordings Recording[]
+}
+
+model Recording {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  scenarioId     String?
+  scenario       Scenario? @relation(fields: [scenarioId], references: [id])
+  filePath       String
+  transcript     String?
+  durationSec    Int?
+  score          Int?
+  createdAt      DateTime @default(now())
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+

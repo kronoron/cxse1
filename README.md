@@ -1,3 +1,22 @@
+# CxSE MVP
+
+## Setup
+
+1. Copy `.env.example` to `.env` and set values
+2. Install deps: `npm install`
+3. Generate DB & client: `npx prisma generate && npx prisma db push`
+4. Seed: `npm run seed`
+5. Dev: `npm run dev`
+
+Seed users:
+- owner@acme.test / Password123!
+- sdr@acme.test / Password123!
+
+## Scripts
+- `npm run seed` — seeds demo data
+- `npm run db:push` — push schema to SQLite
+- `npm run db:studio` — open Prisma Studio
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
